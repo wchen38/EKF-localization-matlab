@@ -5,11 +5,11 @@ clc
 %------------parameters -----------------------------
 deltaT = .02;
 start = 30;
-alphas = [.1 .01 .01 .01 0 0]; % motion model noise parameters
+alphas = [.2 .03 .09 .08 0 0]; % motion model noise parameters
 
 % measurement model noise parameters
-sigma_range = 0.1;
-sigma_bearing = 0.1;
+sigma_range = .43;
+sigma_bearing = .6;
 sigma_id = 1;
 
 Q_t = [sigma_range^2 0 0;
@@ -61,6 +61,9 @@ poseCov(:,:) = .01;
 %--------------------algorithm ekf -----------------------
 
 for i = start:size(poseU, 1)
+    if(i == 2004)
+         break;
+    end
     theta = orientation(start, 4);
     deltaT = (poseU(i, 1) -  poseU(i-1, 1))/1000000000 ;
     
@@ -96,7 +99,8 @@ for i = start:size(poseU, 1)
     
     currTimeStampIndex = find ( (A >= offset(1,1)) & (A <= offset(2,1)) );   %find the current range time stamp
     
-    currObsFeature = ranges(2:721, currTimeStampIndex(end));
+    %currObsFeature = ranges(2:721, currTimeStampIndex(end));
+    currObsFeature = ranges(2:721, i);
     currObsFeatureVec = [currObsFeature'; angle'; zeros(1,720)];
     %currObsFeatureVec = currObsFeatureVec';
     
@@ -106,7 +110,7 @@ for i = start:size(poseU, 1)
     %plot(xc, yc, '-o');
     %pause(0.2);
     
-    for j=1:size(currObsFeature)
+    for j=start:size(currObsFeature)
            if(currObsFeature(j) > 2)
             continue;
            end
@@ -131,9 +135,9 @@ for i = start:size(poseU, 1)
            predS(k,:,:) = squeeze(predH(k,:,:)) * poseCovBar ...
                                * squeeze(predH(k,:,:))' + Q_t;
            thisJ = det(2 * pi * squeeze(predS(k,:,:)))^(-0.5) * ...
-                        exp(-0.5 * (currObsFeatureVec(:,k) - squeeze(predZ(k,:,:)))' ...
+                        exp(-0.5 * (currObsFeatureVec(:,j) - squeeze(predZ(k,:,:)))' ...
                         * inv(squeeze(predS(k,:,:))) ...
-                        * (currObsFeatureVec(:,k) - squeeze(predZ(k,:,:))));
+                        * (currObsFeatureVec(:,j) - squeeze(predZ(k,:,:))));
            if imag(thisJ) ~= 0
                     thisJ = 0;
            end
