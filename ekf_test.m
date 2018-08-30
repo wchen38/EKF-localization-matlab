@@ -41,8 +41,11 @@ ranges = ranges(2:2004, :)';
 scan = ranges(2:721, 4);
 linearVel = load('input_data/linearVel.txt');
 angularVel = load('input_data/angularVel.txt');
-orientation = load('input_data/orientation.txt');
+quaternion1 = load('input_data/orientation.txt');
 
+for i=1:size(quaternion1,1)
+orientation(i,:) = quat2eul(quaternion1(i,2:5));
+end
 
 
 xc = scan.*cos(angle);
@@ -53,18 +56,18 @@ plot(poseHat(:,2),poseHat(:,3)); hold on
 %inital guess of the robot pose
 poseMean = [poseU(start, 2);
             poseU(start, 3);
-            orientation(start,4)];
+            orientation(start,1)];
 %inital guess of the pose covarience        
 poseCov = zeros(3,3);
 poseCov(:,:) = .01;
 
 %--------------------algorithm ekf -----------------------
-
+theta = orientation(start, 1);
 for i = start:size(poseU, 1)
     if(i == 2004)
          break;
     end
-    theta = orientation(start, 4);
+    theta = poseMean(3); %I think this is wrong!!!
     deltaT = (poseU(i, 1) -  poseU(i-1, 1))/1000000000 ;
     
     u_t = [linearVel(i, 2); angularVel(i, 4)]; %linear and angular speed
@@ -167,6 +170,7 @@ for i = start:size(poseU, 1)
     poseEstRec(:, i) = poseMean;
     poseCov = poseCovBar;
     poseCovRec(:, i) = [poseCov(1,1); poseCov(2,2); poseCov(3,3)];
+    %theta = poseMean(3);
     
 end
 
