@@ -94,7 +94,7 @@ for k=START:END
       z = [v(k); odom_av(k); w(k); a(k)];
       
       %expected measurements from our prediction
-      z_exp = [Xm(4); Xm(5); w(k); Xm(6)];
+      z_exp = [Xm(4); Xm(5); Xm(5); Xm(6)];
       
       %innovation, difference between what we observe and what we expect
       innovation = z - z_exp;
