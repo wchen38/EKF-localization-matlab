@@ -1,11 +1,11 @@
 clear all
 clc
 
-imu_angular_vel = load('input_data/imu_angular_vel.csv');
-imu_linear_accel = load('input_data/imu_accel.csv');
-odom_velocity = load('input_data/odom_velocity.csv');
-odom_pose = load('input_data/odom_pose.csv');
-odom_pose_filtered = load('input_data/odom_pose_filtered.csv');
+imu_angular_vel = load('input_data/snake/imu_angular_vel_snake.csv');
+imu_linear_accel = load('input_data/snake/imu_accel_snake.csv');
+odom_velocity = load('input_data/snake/odom_velocity_snake.csv');
+odom_pose = load('input_data/snake/odom_pose_snake.csv');
+odom_pose_filtered = load('input_data/snake/odom_pose_filtered_snake.csv');
 odom_theta = odom_pose(:,4);
 odom_theta_filtered = odom_pose_filtered(:,4);
 
@@ -16,7 +16,8 @@ v = odom_velocity(:, 2);         %linear velocity from odom
 odom_av = odom_velocity(:, 7);         %angular velocity from odom
 
 START = 30;
-END = 1015;
+%END = 1015;     %square data set
+END = 1869;      %snake data set
 dt = 0.02;
 
 
